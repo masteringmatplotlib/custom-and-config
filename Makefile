@@ -1,6 +1,6 @@
 INCLUDE_REPO=git@github.com:masteringmatplotlib/includes.git
 INCLUDE_DIR=include
-NAME=interaction
+NAME=high-level
 NOTEBOOK=notebooks/mmpl-$(NAME).ipynb
 
 -include include/common.mk
