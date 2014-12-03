@@ -1,4 +1,4 @@
-# Event Handling and Interactive Plots
+# High-level Plotting and Data Analysis
 
 
 ## Dependencies
