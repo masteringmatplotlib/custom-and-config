@@ -12,3 +12,7 @@ pandas
 seaborn
 sympy
 ipython[notebook]
+patsy
+statsmodels
+bokeh
+scikit-learn
