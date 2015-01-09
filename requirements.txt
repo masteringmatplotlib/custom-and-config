@@ -16,3 +16,4 @@ patsy
 statsmodels
 bokeh
 scikit-learn
+networkx
