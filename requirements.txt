@@ -9,7 +9,7 @@ numpy
 matplotlib
 scipy
 pandas
-seaborn
+git+http://github.com/mwaskom/seaborn.git@95d7aec3fba5fef5a4e038290542c10a59618c1e
 sympy
 ipython[notebook]
 patsy
