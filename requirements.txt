@@ -9,7 +9,7 @@ numpy
 matplotlib
 scipy
 pandas
-git+http://github.com/mwaskom/seaborn.git@95d7aec3fba5fef5a4e038290542c10a59618c1e
+seaborn
 sympy
 ipython[notebook]
 patsy
@@ -17,3 +17,4 @@ statsmodels
 bokeh
 scikit-learn
 networkx
+ggplot
