@@ -17,4 +17,5 @@ statsmodels
 bokeh
 scikit-learn
 networkx
+husl
 ggplot
