@@ -10,12 +10,4 @@ matplotlib
 scipy
 pandas
 seaborn
-sympy
 ipython[notebook]
-patsy
-statsmodels
-bokeh
-scikit-learn
-networkx
-husl
-ggplot
