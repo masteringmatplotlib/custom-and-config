@@ -34,7 +34,7 @@ def make_autos_radar_plot(figure, gs, pddata):
 
 def make_autos_mpg_plot(figure, gs, pddata):
     data = demodata.get_numeric_data(pddata)
-    axes = plt.subplot(gs[0, 0])
+    axes = figure.add_subplot(gs[0, 0])
     axes.set_title("Ranges of City and Highway MPG", fontsize=20)
     axes.scatter(data["make"], data["highway mpg"], c=colors[3],
                  s=200, alpha=0.4)
@@ -47,4 +47,108 @@ def make_autos_mpg_plot(figure, gs, pddata):
     city_patch = mpl.patches.Patch(color=colors[0], alpha=0.7, label="City")
     highway_patch = mpl.patches.Patch(color=colors[3], alpha=0.7, label="Highway")
     axes.legend(handles=[city_patch, highway_patch])
+    gs.tight_layout(figure)
+    return axes
+
+
+def make_autos_price_plot(figure, gs, pddata):
+    min_data = pddata.groupby("make", sort=True)["price"].min()
+    max_data = pddata.groupby("make", sort=True)["price"].max()
+    mean_data = pddata.groupby("make", sort=True)["price"].mean()
+    make_ids = demodata.get_make_ids(pddata)
+    axes = figure.add_subplot(gs[0, 0])
+    axes.plot(make_ids, min_data, c=colors[2], linewidth=4, alpha=0.7)
+    axes.plot(make_ids, mean_data, c=colors[3], linewidth=4, alpha=0.7)
+    axes.plot(make_ids, max_data, c=colors[4], linewidth=4, alpha=0.7)
+    axes.set_xticks(range(-1, 13))
+    axes.set_xticklabels([" "] + demodata.get_make_labels(pddata))
+    axes.set_xlabel("Make", fontsize=16)
+    axes.set_ylabel("Price", fontsize=16)
+    high_patch = mpl.patches.Patch(color=colors[4], alpha=0.7, label="High")
+    mean_patch = mpl.patches.Patch(color=colors[3], alpha=0.7, label="Mean")
+    low_patch = mpl.patches.Patch(color=colors[2], alpha=0.7, label="Low")
+    axes.legend(handles=[high_patch, mean_patch, low_patch])
+    gs.tight_layout(figure)
+    return axes
+
+
+def make_autos_riskiness_plot(figure, gs, pddata):
+    risk_mins = pddata.groupby("make")["riskiness"].min().values
+    risk_means = pddata.groupby("make")["riskiness"].mean().values
+    risk_maxs = pddata.groupby("make")["riskiness"].max().values
+    make_ids = demodata.get_make_ids(pddata)
+    min_color = colors[0]
+    mean_color = colors[3]
+    max_color = colors[2]
+    axes = figure.add_subplot(gs[0, 0])
+    axes.set_title("Riskiness (Inverted, Normalized)", fontsize=20)
+    mins_bar = axes.bar(make_ids, risk_mins, width=0.5, align="center",
+                        color=min_color, alpha=0.7)
+    means_bar = axes.bar(make_ids, risk_means, width=0.5, align="center",
+                         bottom=risk_mins, color=mean_color, alpha=0.7)
+    maxs_bar = axes.bar(make_ids, risk_maxs, width=0.5, align="center",
+                        bottom=risk_means + risk_mins, color=max_color, alpha=0.7)
+    axes.set_xticks(range(0, 13))
+    axes.set_xticklabels(demodata.get_make_labels(pddata))
+    axes.set_xlabel("Make", fontsize=16)
+    axes.set_ylabel("Inverse Risk", fontsize=16)
+    axes.legend([mins_bar, means_bar, maxs_bar], ["Min", "Mean", "Max"])
+    gs.tight_layout(figure)
+    return axes
+
+
+def make_autos_losses_plot(figure, gs, pddata):
+    loss_mins = pddata.groupby("make")["losses"].min().values
+    loss_means = pddata.groupby("make")["losses"].mean().values
+    loss_maxs = pddata.groupby("make")["losses"].max().values
+    make_ids = demodata.get_make_ids(pddata)
+    min_color = colors[0]
+    mean_color = colors[3]
+    max_color = colors[2]
+    axes = figure.add_subplot(gs[0, 0])
+    axes.set_title("Losses (Inverted, Normalized)", fontsize=20)
+    mins_bar = axes.bar(make_ids, loss_mins, width=0.5, align="center",
+                        color=min_color, alpha=0.7)
+    means_bar = axes.bar(make_ids, loss_means, width=0.5, align="center",
+                         bottom=loss_mins, color=mean_color, alpha=0.7)
+    maxs_bar = axes.bar(make_ids, loss_maxs, width=0.5, align="center",
+                        bottom=loss_means + loss_mins, color=max_color, alpha=0.7)
+    axes.set_xticks(range(0, 13))
+    axes.set_xticklabels(demodata.get_make_labels(pddata))
+    axes.set_xlabel("Make", fontsize=16)
+    axes.set_ylabel("Inverse Losses", fontsize=16)
+    axes.legend([mins_bar, means_bar, maxs_bar], ["Min", "Mean", "Max"])
+    gs.tight_layout(figure)
+    return axes
+
+
+def make_autos_loss_and_risk_plot(figure, gs, pddata):
+    risk_mins = pddata.groupby("make")["riskiness"].min().values
+    risk_means = pddata.groupby("make")["riskiness"].mean().values
+    risk_maxs = pddata.groupby("make")["riskiness"].max().values
+    loss_mins = pddata.groupby("make")["losses"].min().values
+    loss_means = pddata.groupby("make")["losses"].mean().values
+    loss_maxs = pddata.groupby("make")["losses"].max().values
+    mins = risk_mins + loss_mins
+    means = risk_means + loss_means
+    maxs = risk_maxs + loss_maxs
+    make_ids = demodata.get_make_ids(pddata)
+    min_color = colors[0]
+    mean_color = colors[3]
+    max_color = colors[2]
+    axes = figure.add_subplot(gs[0, 0])
+    axes.set_title("Combined Losses and Riskiness Data\n(Inverted, Normalized)",
+                   fontsize=20)
+    mins_bar = axes.bar(make_ids, mins, align="center", color=min_color,
+                        alpha=0.7)
+    means_bar = axes.bar(make_ids, means, align="center", bottom=mins,
+                         color=mean_color, alpha=0.7)
+    maxs_bar = axes.bar(make_ids, maxs, align="center", bottom=means + mins,
+                        color=max_color, alpha=0.7)
+    axes.set_xticks(range(0, 13))
+    axes.set_xticklabels(demodata.get_make_labels(pddata))
+    axes.set_xlabel("Make", fontsize=16)
+    axes.set_ylabel("Inverse Losses\nand Riskiness", fontsize=16)
+    axes.legend([mins_bar, means_bar, maxs_bar], ["Min", "Mean", "Max"])
+    gs.tight_layout(figure)
     return axes
