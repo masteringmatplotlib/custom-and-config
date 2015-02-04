@@ -1,7 +1,6 @@
 import pandas as pd
 
 
-padding = " "
 limited_columns = ["make","price","city mpg","highway mpg","horsepower",
                    "weight","riskiness","losses"]
 
@@ -15,7 +14,7 @@ def get_make_labels(data):
 
 
 def get_make_id_map(data):
-    return {x:i for (i,x) in enumerate(get_make_names(data)) if x != padding}
+    return {x:i for (i,x) in enumerate(get_make_names(data))}
 
 
 def get_make_ids(data):
@@ -45,7 +44,7 @@ def get_make_counts(pddata, lower_bound=0):
 
 def get_limited_data(cols=None, lower_bound=None):
     if not cols:
-        cols=limited_columns
+        cols = limited_columns
     data = get_raw_data()[cols]
     if lower_bound:
         (makes, _) = get_make_counts(data, lower_bound)
