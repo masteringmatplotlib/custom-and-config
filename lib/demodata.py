@@ -6,12 +6,16 @@ limited_columns = ["make","price","city mpg","highway mpg","horsepower",
                    "weight","riskiness","losses"]
 
 
+def get_make_names(data):
+    return sorted(list(pd.Series(data["make"]).unique()))
+
+
 def get_make_labels(data):
-    return [padding] + [x.title() for x in pd.Series(data["make"]).unique()]
+    return [x.title() for x in get_make_names(data)]
 
 
 def get_make_id_map(data):
-    return {x:i for (i,x) in enumerate(get_make_labels(data)) if x != padding}
+    return {x:i for (i,x) in enumerate(get_make_names(data)) if x != padding}
 
 
 def get_make_ids(data):
@@ -53,3 +57,5 @@ def get_all_auto_makes():
      return pd.Series(get_raw_data()["make"]).unique()
 
 
+def get_numeric_data(pddata):
+    return pddata.replace({"make": get_make_id_map(pddata)})
