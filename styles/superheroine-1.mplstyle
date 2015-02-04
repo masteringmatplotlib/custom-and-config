@@ -1,13 +1,11 @@
 lines.color: 4e5d6c
 patch.edgecolor: 4e5d6c
 
-#text.color: cdced1
-text.color: df691b
+text.color: cdced1
 
 axes.facecolor: 2b3e50
 axes.edgecolor: 4e5d6c
-#axes.labelcolor: ff812d
-axes.labelcolor: df691b
+axes.labelcolor: ff812d
 axes.color_cycle: df691b, 5cb85c, 5bc0de, f0ad4e, d9534f, 4e5d6c
 axes.axisbelow: True
 
