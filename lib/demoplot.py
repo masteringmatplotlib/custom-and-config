@@ -8,30 +8,48 @@ import demodata
 
 colors = mpl.rcParams['axes.color_cycle']
 
+
 def hide_axes(axes):
     axes.set_frame_on(False)
     [n.set_visible(False) for n in axes.get_xticklabels() + axes.get_yticklabels()]
     [n.set_visible(False) for n in axes.get_xticklines() + axes.get_yticklines()]
 
+
 def make_autos_radar_plot(figure, gs, pddata):
+    radar_colors = [1, 2, 0]
     min_data = pddata.groupby("make", sort=True).min()
     max_data = pddata.groupby("make", sort=True).max()
     mean_data = pddata.groupby("make", sort=True).mean()
     projection = radar.RadarAxes(spoke_count=len(mean_data.columns))
     (row_num, col_num) = gs.get_geometry()
+    subplots = [x for x in gs]
     # setup title grid axes
     title_axes = figure.add_subplot(gs[0, :])
     title_axes.set_title("Radar Plot on 7 Dimensions\nFor 12 Manufacturers",
                          fontsize=20)
     hide_axes(title_axes)
+    # setup legend axes
+    max_patch = mpl.patches.Patch(color=colors[radar_colors[0]], alpha=0.7,
+                                  label="Max")
+    mean_patch = mpl.patches.Patch(color=colors[radar_colors[1]], alpha=0.7,
+                                   label="Mean")
+    min_patch = mpl.patches.Patch(color=colors[radar_colors[2]], alpha=0.7,
+                                  label="Min")
+    legend_axes = figure.add_subplot(gs[0:, 0])
+    hide_axes(legend_axes)
+    legend_axes.legend(handles=[max_patch, mean_patch, min_patch], loc=10)
     # setup inner grid axes
-    inner_axes = [plt.subplot(m, projection=projection) for m in [n for n in gs][col_num:]]
+    inner_axes = []
+    for (i, m) in enumerate(subplots[col_num:]):
+        # the left-most column is reserved for the legend
+        if i % col_num != 0:
+            inner_axes.append(plt.subplot(m, projection=projection))
     for i, make in enumerate(demodata.get_make_names(pddata)):
         axes = inner_axes[i]
         axes.set_title(
             make.title(), size='large', position=(0.5, 1.1),
             horizontalalignment='center', verticalalignment='center')
-        for (color, alpha, data) in zip([1, 2, 0],
+        for (color, alpha, data) in zip(radar_colors,
                                         [0.2, 0.3, 0.4],
                                         [max_data, mean_data, min_data]):
             axes.fill(axes.radar_theta, data.loc[make], color=colors[color],
@@ -40,7 +58,7 @@ def make_autos_radar_plot(figure, gs, pddata):
         axes.set_varlabels([x.replace(" ", "\n") for x in mean_data.columns])
         axes.set_yticklabels([])
     gs.tight_layout(figure)
-    return [title_axes, inner_axes]
+    return [title_axes, legend_axes, inner_axes]
 
 
 def make_empty_plot(figure, gs):
