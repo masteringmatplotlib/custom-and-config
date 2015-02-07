@@ -15,35 +15,44 @@ def hide_axes(axes):
     [n.set_visible(False) for n in axes.get_xticklines() + axes.get_yticklines()]
 
 
-def make_autos_radar_plot(figure, gs, pddata):
+def make_autos_radar_plot(
+    figure, gs=None, pddata=None, title_axes=None, legend_axes=None,
+    inner_axes=None, geometry=None, rotate=True):
     radar_colors = [1, 2, 0]
     min_data = pddata.groupby("make", sort=True).min()
     max_data = pddata.groupby("make", sort=True).max()
     mean_data = pddata.groupby("make", sort=True).mean()
     projection = radar.RadarAxes(spoke_count=len(mean_data.columns))
-    (row_num, col_num) = gs.get_geometry()
-    subplots = [x for x in gs]
+    if geometry:
+        (row_num, col_num) = geometry
+    else:
+        (row_num, col_num) = gs.get_geometry()
+    if not inner_axes:
+        subplots = [x for x in gs]
+        inner_axes = []
+        for (i, m) in enumerate(subplots[col_num:]):
+            # the left-most column is reserved for the legend
+            if i % col_num != 0:
+                inner_axes.append(plt.subplot(m, projection=projection))
+    if not title_axes:
+        title_axes = figure.add_subplot(gs[0, :])
+    if legend_axes is None:
+        legend_axes = figure.add_subplot(gs[0:, 0])
+    if legend_axes != False:
+        # setup legend axes
+        max_patch = mpl.patches.Patch(color=colors[radar_colors[0]], alpha=0.7,
+                                      label="Max")
+        mean_patch = mpl.patches.Patch(color=colors[radar_colors[1]], alpha=0.7,
+                                       label="Mean")
+        min_patch = mpl.patches.Patch(color=colors[radar_colors[2]], alpha=0.7,
+                                      label="Min")
+        legend_axes.legend(handles=[max_patch, mean_patch, min_patch], loc=10)
+        hide_axes(legend_axes)
     # setup title grid axes
-    title_axes = figure.add_subplot(gs[0, :])
     title_axes.set_title("Radar Plot on 7 Dimensions\nFor 12 Manufacturers",
-                         fontsize=20)
+                         fontsize=16)
     hide_axes(title_axes)
-    # setup legend axes
-    max_patch = mpl.patches.Patch(color=colors[radar_colors[0]], alpha=0.7,
-                                  label="Max")
-    mean_patch = mpl.patches.Patch(color=colors[radar_colors[1]], alpha=0.7,
-                                   label="Mean")
-    min_patch = mpl.patches.Patch(color=colors[radar_colors[2]], alpha=0.7,
-                                  label="Min")
-    legend_axes = figure.add_subplot(gs[0:, 0])
-    hide_axes(legend_axes)
-    legend_axes.legend(handles=[max_patch, mean_patch, min_patch], loc=10)
     # setup inner grid axes
-    inner_axes = []
-    for (i, m) in enumerate(subplots[col_num:]):
-        # the left-most column is reserved for the legend
-        if i % col_num != 0:
-            inner_axes.append(plt.subplot(m, projection=projection))
     for i, make in enumerate(demodata.get_make_names(pddata)):
         axes = inner_axes[i]
         axes.set_title(
@@ -57,7 +66,8 @@ def make_autos_radar_plot(figure, gs, pddata):
             axes.plot(axes.radar_theta, data.loc[make], color=colors[color])
         axes.set_varlabels([x.replace(" ", "\n") for x in mean_data.columns])
         axes.set_yticklabels([])
-    gs.tight_layout(figure)
+    if gs:
+        gs.tight_layout(figure)
     return [title_axes, legend_axes, inner_axes]
 
 
@@ -124,7 +134,7 @@ def make_autos_riskiness_plot(
     min_color = colors[0]
     mean_color = colors[3]
     max_color = colors[2]
-    axes.set_title("Riskiness", fontsize=14)
+    axes.set_title("Inverse Risk", fontsize=14)
     mins_bar = axes.bar(make_ids, risk_mins, width=0.5, align="center",
                         color=min_color, alpha=0.7)
     means_bar = axes.bar(make_ids, risk_means, width=0.5, align="center",
@@ -157,7 +167,7 @@ def make_autos_losses_plot(
     min_color = colors[0]
     mean_color = colors[3]
     max_color = colors[2]
-    axes.set_title("Losses", fontsize=14)
+    axes.set_title("Inverse Losses", fontsize=14)
     mins_bar = axes.bar(make_ids, loss_mins, width=0.5, align="center",
                         color=min_color, alpha=0.7)
     means_bar = axes.bar(make_ids, loss_means, width=0.5, align="center",
