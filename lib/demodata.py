@@ -52,6 +52,23 @@ def get_limited_data(cols=None, lower_bound=None):
     return data
 
 
+def norm_column(col_name, pddata, inverted=False):
+    pddata[col_name] -= pddata[col_name].min()
+    pddata[col_name] /= pddata[col_name].max()
+    if inverted:
+        pddata[col_name] = 1 - pddata[col_name]
+
+
+def norm_columns(col_names, pddata):
+    for col in col_names:
+        norm_column(col, pddata)
+
+
+def invert_norm_columns(col_names, pddata):
+    for col in col_names:
+        norm_column(col, pddata, inverted=True)
+
+
 def get_all_auto_makes():
      return pd.Series(get_raw_data()["make"]).unique()
 
